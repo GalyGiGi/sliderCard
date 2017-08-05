@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clipChildren="false"
+    android:gravity="center"
+    android:background="#e0000000"
+    android:orientation="vertical">
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipChildren="false"
+        android:overScrollMode="never"
+        app:layoutManager="com.ramotion.cardslider.CardSliderLayoutManager"
+        app:viewUpdater="com.ramotion.cardslider.examples.simple.cards.CardsVerticalUpdater"
+        app:cardWidth="246dp"
+        app:cardHeight="350dp"
+        app:cardsGap1to2="84dp"
+        app:cardsGap2to3="78dp"
+        app:mode="vertical"
+        app:centerHorizontal="true"
+        />
+</LinearLayout>

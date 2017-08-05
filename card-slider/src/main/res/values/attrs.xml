@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="CardSlider">
+        <!-- Active card offset from start of RecyclerView. Default value is 50dp. -->
+        <attr name="activeCardLeftOffset" format="dimension" />
+        <!-- Active card offset from top of RecyclerView. Default value is 50dp. -->
+        <attr name="activeCardTopOffset" format="dimension" />
+        <!-- Card width. Default value is 148dp. -->
+        <attr name="cardWidth" format="dimension" />
+        <!-- Card height. Default value is 148dp. -->
+        <attr name="cardHeight" format="dimension" />
+        <!-- Distance between cards. Default value is 12dp. -->
+        <attr name="cardsGap" format="dimension" />
+        <attr name="cardsGap1to2" format="dimension" />
+        <attr name="cardsGap2to3" format="dimension" />
+
+        <!-- 滑动模式，vertical或者horizontal-->
+        <attr name="mode">
+            <enum name="horizontal" value="0" />
+            <enum name="vertical" value="1" />
+        </attr>
+        <!-- if the cards centen_vertical,when use vertical mode. Default value is false. -->
+        <attr name="centerHorizontal" format="boolean" />
+        <!-- ViewUpdater implementation class. If not set, DefaultViewUpdater class is used. -->
+        <attr name="viewUpdater" format="string" />
+    </declare-styleable>
+</resources>

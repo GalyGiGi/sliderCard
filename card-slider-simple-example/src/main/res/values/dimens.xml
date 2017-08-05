@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="recycler_view_left_offset">9dp</dimen>
+    <dimen name="left_offset">61dp</dimen>
+    <dimen name="card_width">148dp</dimen>
+    <dimen name="card_corner_radius">10dp</dimen>
+    <dimen name="device_card_width">246dp</dimen>
+    <dimen name="device_card_height">350dp</dimen>
+    <dimen name="device_card_title_height">70dp</dimen>
+    <dimen name="device_card_title_textsize">17sp</dimen>
+    <dimen name="device_card_bottom_height">52dp</dimen>
+    <dimen name="device_card_bottom_textsize">13sp</dimen>
+</resources>
