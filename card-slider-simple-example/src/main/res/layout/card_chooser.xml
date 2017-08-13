@@ -18,8 +18,8 @@
         app:viewUpdater="com.ramotion.cardslider.examples.simple.cards.CardsVerticalUpdater"
         app:cardWidth="246dp"
         app:cardHeight="350dp"
-        app:cardsGap1to2="84dp"
-        app:cardsGap2to3="78dp"
+        app:cardsGap1to2="78dp"
+        app:cardsGap2to3="84dp"
         app:mode="vertical"
         app:centerHorizontal="true"
         />

@@ -138,55 +138,47 @@ public class VerticalViewUpdater extends ViewUpdater {
                 scale = SCALE_CENTER - SCALE_CENTER_TO_BOTTOM * ratio;
                 alpha = 1;
                 z = Z_CENTER_2;
+                float realTranslation = transitionBottom2Center * (viewTop - transitionEnd) / transitionDistance;
+                if (Math.abs(transitionBottom2Center) < Math.abs(realTranslation)) {
+                    realTranslation = transitionBottom2Center;
+                }
+                y = -realTranslation;
                 //transitionDistance卡片长度，transitionEnd卡片中间点y坐标,
 //                y = -Math.min(transitionBottom2Center, transitionBottom2Center * (viewTop - transitionEnd) / transitionDistance);
-                y = 0;
-//                Log.i("viewUpdater", "index:" + i + "---updateView---center2bottom>>>y:" + y);
             } else {
                 scale = SCALE_BOTTOM;
                 alpha = 1;
                 z = Z_RIGHT;
-                y=0;
-//                if (lm.getActiveCardPosition() < lm.getPosition(view)) {
-//                    y = lm.getHeight() - lm.getDecoratedTop(view);
-//                }else{
-//                    y=0;
-//                }
-//                if (prevView != null) {
-//                    final float prevViewScale;
-//                    float prevTransition = 0;
-//                    final int prevBottom;
-//
-//                    final boolean isFirstBottom = lm.getDecoratedBottom(prevView) <= activeCardBottom;
-//                    if (isFirstBottom) {
-//                        prevViewScale = SCALE_CENTER;
-//                        prevBottom = activeCardBottom;
-//                        prevTransition = 0;
-//                    } else {
-//                        prevViewScale = ViewCompat.getScaleY(prevView);
-//                        prevBottom = lm.getDecoratedBottom(prevView);
-//                        if (ViewCompat.getTranslationY(prevView) - prevTransition > 300) {
-//                            Log.i("viewUpdater", "---突变---");
-//                        }
-//                        prevTransition = ViewCompat.getTranslationY(prevView);
-//                    }
-//
-//                    final float prevBorder = (cardHeight - cardHeight * prevViewScale) / 2;
-//                    final float currentBorder = (cardHeight - cardHeight * SCALE_BOTTOM) / 2;
-//                    final float distance = (viewTop + currentBorder) - (prevBottom - prevBorder + prevTransition);
-//
-//                    final float transition = distance - cardsGap;
-//                    y = -transition;
-//                    Log.i("viewUpdater", "index:" + i + "---updateView---bottom2end>>>y:" + y + "   ,isFirstBottom:" + isFirstBottom + " ,prevBottom:" + prevBottom + " ,preTransition:" + prevTransition);
-//
-//                } else {
-//                    y = 0;
-//                }
+                if (prevView != null) {
+                    final float prevViewScale;
+                    float prevTransition = 0;
+                    final int prevBottom;
+
+                    final boolean isFirstBottom = lm.getDecoratedBottom(prevView) <= activeCardBottom;
+                    if (isFirstBottom) {
+                        prevViewScale = SCALE_CENTER;
+                        prevBottom = activeCardBottom;
+                        prevTransition = 0;
+                    } else {
+                        prevViewScale = ViewCompat.getScaleY(prevView);
+                        prevBottom = lm.getDecoratedBottom(prevView);
+                        prevTransition = ViewCompat.getTranslationY(prevView);
+                    }
+
+                    final float prevBorder = (cardHeight - cardHeight * prevViewScale) / 2;
+                    final float currentBorder = (cardHeight - cardHeight * SCALE_BOTTOM) / 2;
+                    final float distance = (viewTop + currentBorder) - (prevBottom - prevBorder + prevTransition);
+
+                    final float transition = distance - cardsGap;
+                    y = -transition;
+
+                } else {
+                    y = 0;
+                }
 
             }
-//            Log.i("viewUpdater", "---updateView---y:" + y + ",scale:" + scale + ",z:" + z + ",index:" + i);
             onUpdateViewScale(view, scale);
-//            onUpdateViewTransitionY(view, y);//注释掉之后没有了因为gap变大而出现的顿挫（y坐标漂移）
+            onUpdateViewTransitionY(view, y);
             onUpdateViewZ(view, z);
             onUpdateViewAlpha(view, alpha);
 
@@ -210,12 +202,6 @@ public class VerticalViewUpdater extends ViewUpdater {
     protected void onUpdateViewZ(@NonNull View view, float z) {
         if (ViewCompat.getZ(view) != z) {
             ViewCompat.setZ(view, z);
-        }
-    }
-
-    protected void onUpdateViewTransitionX(@NonNull View view, float x) {
-        if (ViewCompat.getTranslationX(view) != x) {
-            ViewCompat.setTranslationX(view, x);
         }
     }
 

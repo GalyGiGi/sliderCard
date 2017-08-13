@@ -57,8 +57,8 @@ public class CardSliderLayoutManager extends RecyclerView.LayoutManager
     private float cardsGap;
     private int mTopStep;
 
-    private float cardsGap1to2 = DEFAULT_CARDS_GAP_1TO2;
-    private float cardsGap2to3 = DEFAULT_CARDS_GAP_2TO3;
+    private float cardsGap1to2;
+    private float cardsGap2to3;
     private int scrollRequestedPosition = 0;
 
     private ViewUpdater viewUpdater;
@@ -91,9 +91,12 @@ public class CardSliderLayoutManager extends RecyclerView.LayoutManager
         final int defaultActiveCardTop = (int) (DEFAULT_ACTIVE_CARD_TOP_OFFSET * density);
         final int defaultCardHeight = (int) (DEFAULT_CARD_HEIGHT * density);
         final boolean defaultCenterHorizontal = DEFAULT_CENTER_HORIZONTAL;
+        final float defaultCardGap1to2 = DEFAULT_CARDS_GAP_1TO2 * density;
+        final float defaultCardGap2to3 = DEFAULT_CARDS_GAP_2TO3 * density;
+
         if (attrs == null) {
             if (mScrollMode == MODE_VERTICL) {
-                initializeVertical(defaultActiveCardTop, defaultCardHeight, defaultCardWidth, defaultCardsGap, null, defaultCenterHorizontal);
+                initializeVertical(defaultActiveCardTop, defaultCardHeight, defaultCardWidth, defaultCardsGap, null, defaultCenterHorizontal, defaultCardGap1to2, defaultCardGap2to3);
             } else {
                 initialize(defaultActiveCardLeft, defaultCardWidth, defaultCardsGap, null);
             }
@@ -106,6 +109,8 @@ public class CardSliderLayoutManager extends RecyclerView.LayoutManager
             boolean attrCenterHorizontal;
             String viewUpdateClassName;
             int attrMode;
+            float attrCardGap1to2;
+            float attrCardGap2to3;
             final TypedArray a = context.getTheme().obtainStyledAttributes(attrs, R.styleable.CardSlider, 0, 0);
             try {
                 attrCardWidth = a.getDimensionPixelSize(R.styleable.CardSlider_cardWidth, defaultCardWidth);
@@ -113,8 +118,8 @@ public class CardSliderLayoutManager extends RecyclerView.LayoutManager
                 attrActiveCardLeft = a.getDimensionPixelSize(R.styleable.CardSlider_activeCardLeftOffset, defaultActiveCardLeft);
                 attrActivieCardTop = a.getDimensionPixelSize(R.styleable.CardSlider_activeCardTopOffset, defaultActiveCardTop);
                 attrCardsGap = a.getDimension(R.styleable.CardSlider_cardsGap, defaultCardsGap);
-                this.cardsGap1to2 = a.getDimension(R.styleable.CardSlider_cardsGap1to2, DEFAULT_CARDS_GAP_1TO2);
-                this.cardsGap2to3 = a.getDimension(R.styleable.CardSlider_cardsGap2to3, DEFAULT_CARDS_GAP_2TO3);
+                attrCardGap1to2 = a.getDimension(R.styleable.CardSlider_cardsGap1to2, DEFAULT_CARDS_GAP_1TO2);
+                attrCardGap2to3 = a.getDimension(R.styleable.CardSlider_cardsGap2to3, DEFAULT_CARDS_GAP_2TO3);
                 viewUpdateClassName = a.getString(R.styleable.CardSlider_viewUpdater);
                 attrMode = a.getInt(R.styleable.CardSlider_mode, MODE_HORIZONTAL);
                 mScrollMode = attrMode;
@@ -125,7 +130,7 @@ public class CardSliderLayoutManager extends RecyclerView.LayoutManager
 
             final ViewUpdater viewUpdater = loadViewUpdater(context, viewUpdateClassName, attrs);
             if (mScrollMode == MODE_VERTICL) {
-                initializeVertical(attrActivieCardTop, attrCardHeight, attrCardWidth, attrCardsGap, viewUpdater, attrCenterHorizontal);
+                initializeVertical(attrActivieCardTop, attrCardHeight, attrCardWidth, attrCardsGap, viewUpdater, attrCenterHorizontal, attrCardGap1to2, attrCardGap2to3);
             } else {
                 initialize(attrActiveCardLeft, attrCardWidth, attrCardsGap, viewUpdater);
             }
@@ -173,15 +178,15 @@ public class CardSliderLayoutManager extends RecyclerView.LayoutManager
         viewUpdater.onLayoutManagerInitialized();
     }
 
-    private void initializeVertical(int top, int height, int width, float gap, @Nullable ViewUpdater updater, boolean isCenterHorizontal) {
+    private void initializeVertical(int top, int height, int width, float gap, @Nullable ViewUpdater updater, boolean isCenterHorizontal, float gap1to2, float gat2to3) {
         this.cardHeight = height;
         this.cardWidth = width;//add by ZC
         this.activeCardTop = top;
-        this.cardsGap = gap;
         this.activeCardBottom = activeCardTop + cardHeight;
         this.activeCardCenter = activeCardTop + ((activeCardBottom - activeCardTop) / 2);
         this.cardsGap = getPhoneHeight(mContext) - activeCardBottom;//zc 强制让底下的卡片出屏幕
-
+        this.cardsGap1to2 = gap1to2;
+        this.cardsGap2to3 = gat2to3;
         this.viewUpdater = updater;
         if (this.viewUpdater == null) {
             this.viewUpdater = new VerticalViewUpdater(this);
@@ -303,9 +308,9 @@ public class CardSliderLayoutManager extends RecyclerView.LayoutManager
         scrollRequestedPosition = RecyclerView.NO_POSITION;
         int delta;
         if (dy < 0) {
-            delta = scrollBottom2(Math.max(dy, -cardHeight));
+            delta = scrollBottom(Math.max(dy, -cardHeight));
         } else {
-            delta = scrollTop2(dy);
+            delta = scrollTop(dy);
         }
 
         fill(getActiveCardPosition(), recycler, state);
@@ -563,8 +568,8 @@ public class CardSliderLayoutManager extends RecyclerView.LayoutManager
 
         final int deltaBorder = activeCardTop + getPosition(bottomestView) * cardHeight;
 
-//        final int delta = getAllowedBottomDelta(bottomestView, dy, deltaBorder);
-        final int delta = dy;
+        final int delta = getAllowedBottomDelta(bottomestView, dy, deltaBorder);
+//        final int delta = dy;
 
 
         final LinkedList<View> bottomViews = new LinkedList<>();
@@ -587,11 +592,11 @@ public class CardSliderLayoutManager extends RecyclerView.LayoutManager
             view.offsetTopAndBottom(-allowedDelta);
         }
 
-        final int step = activeCardTop / TOP_CARD_COUNT;
-        final int jDelta = (int) Math.floor(1f * delta * step / cardHeight);
+//        final int step = activeCardTop / TOP_CARD_COUNT;
+//        final int jDelta = (int) Math.floor(1f * delta * step / cardHeight);
         View prevView = null;
         int j = 0;
-
+        final int activeCardPosition = getActiveCardPosition();
         for (int i = 0, cnt = topViews.size(); i < cnt; i++) {
             final View view = topViews.get(i);
             if (prevView == null || getDecoratedTop(prevView) >= activeCardBottom) {
@@ -599,13 +604,17 @@ public class CardSliderLayoutManager extends RecyclerView.LayoutManager
                 final int allowedDelta = getAllowedBottomDelta(view, dy, border);
                 view.offsetTopAndBottom(-allowedDelta);
             } else {
-//                if (stepCount == 1) {
-//                    step = (int) cardsGap1to2;
-//                }
-//                if (stepCount == 1) {
-//                    step = (int) (cardsGap1to2 + cardsGap2to3);
-//                }
-                final int border = activeCardTop - step * j;
+                final int jDelta;
+                final int border;
+                if (activeCardPosition - getPosition(view) == 2) {
+                    jDelta = (int) Math.floor(1f * delta * cardsGap1to2 / cardHeight);
+                    border = (int) (activeCardTop - cardsGap1to2 - cardsGap2to3);
+                } else {
+                    jDelta = (int) Math.floor(1f * delta * cardsGap1to2 / cardHeight);
+                    border = (int) (activeCardTop - cardsGap2to3);
+                }
+
+//                final int border = activeCardTop - step * j;
                 view.offsetTopAndBottom(-getAllowedBottomDelta(view, jDelta, border));
                 j++;
             }
@@ -648,27 +657,33 @@ public class CardSliderLayoutManager extends RecyclerView.LayoutManager
             view.offsetTopAndBottom(-allowedDelta);
         }
 
-        final int step = activeCardTop / TOP_CARD_COUNT;
-        final int jDelta = (int) Math.floor(1f * delta * step / cardHeight);
+//        final int step = activeCardTop / TOP_CARD_COUNT;
+//        final int jDelta = (int) Math.floor(1f * delta * step / cardHeight);
         View prevView = null;
-        int j = 0;
-
+        int jDelta;
+        final int activeCardPostion = getActiveCardPosition();
         for (int i = 0, cnt = topViews.size(); i < cnt; i++) {
+
             final View view = topViews.get(i);
             if (prevView == null || getDecoratedTop(prevView) >= activeCardBottom) {
                 final int border = activeCardTop + getPosition(view) * cardHeight;
                 final int allowedDelta = getAllowedBottomDelta(view, dy, border);
                 view.offsetTopAndBottom(-allowedDelta);
             } else {
-//                if (stepCount == 1) {
-//                    step = (int) cardsGap1to2;
-//                }
-//                if (stepCount == 1) {
-//                    step = (int) (cardsGap1to2 + cardsGap2to3);
-//                }
-                final int border = activeCardTop - step * j;
+                int border;
+                if (activeCardPostion - getPosition(view) == 2) {
+                    jDelta = (int) Math.floor(1f * delta * cardsGap1to2 / cardHeight);
+                    border = (int) (activeCardTop - cardsGap1to2 - cardsGap2to3);
+                } else if(activeCardPostion - getPosition(view) == 1){
+                    jDelta = (int) Math.floor(1f * delta * cardsGap2to3 / cardHeight);
+                    border = (int) (activeCardTop - cardsGap2to3);
+
+                }else{
+                    jDelta = (int) Math.floor(1f * delta * cardsGap2to3 / cardHeight);
+                    border = activeCardTop;
+
+                }
                 view.offsetTopAndBottom(-getAllowedBottomDelta(view, jDelta, border));
-                j++;
             }
             prevView = view;
         }
@@ -787,10 +802,12 @@ public class CardSliderLayoutManager extends RecyclerView.LayoutManager
             delta = dy;
         }
 
-        final int step = activeCardTop / TOP_CARD_COUNT;
-        final int jDelta = (int) Math.ceil(1f * delta * step / cardHeight);
+//        final int step = activeCardTop / TOP_CARD_COUNT;
+//        final int jDelta = (int) Math.ceil(1f * delta * step / cardHeight);
 //        Log.i("layoutmanager", "jDelta:" + jDelta);
+        final int activeCardPositon = getActiveCardPosition();
         for (int i = childCount - 1; i >= 0; i--) {
+
             final View view = getChildAt(i);
             final int viewTop = getDecoratedTop(view);
 
@@ -799,31 +816,21 @@ public class CardSliderLayoutManager extends RecyclerView.LayoutManager
 //                view.offsetTopAndBottom(getAllowedTopDelta(view, delta, (int) (activeCardTop + cardsGap)));
 
             } else {
-                int border = activeCardTop - step;
-//                //zc -------------
-//                int border = 0;
-//                if (mTopStep > 1) {
-//                    border = (int) (activeCardTop - cardsGap1to2);
-//                }
-//                //zc
-//                int stepCount = 0;
+                int border;
+                int jDelta;
                 for (int j = i; j >= 0; j--) {
                     final View jView = getChildAt(j);
-//                    //zc ---------------
-//                    if (stepCount == 0) {
-//                        step = (int) cardsGap1to2;
-//                        border -= (int) (activeCardTop - step);
-//                        jDelta = (int) Math.ceil(1f * delta * step / cardHeight);
-//                    }
-//                    if (stepCount == 1) {
-//                        step = (int) (cardsGap2to3 + cardsGap1to2);
-//                        border -= (int) (activeCardTop - step);
-//                        jDelta = (int) Math.ceil(1f * delta * step / cardHeight);
-//                    }
-//                    stepCount++;
-                    //zc
+                    if (activeCardPositon - getPosition(view) == 2) {
+                        border = (int) (activeCardTop - cardsGap1to2 - cardsGap2to3);
+                        jDelta = (int) Math.ceil(1f * delta * cardsGap1to2 / cardHeight);
+                    } else if(activeCardPositon - getPosition(view) == 1){
+                        border = (int) (activeCardTop - cardsGap2to3);
+                        jDelta = (int) Math.ceil(1f * delta * cardsGap2to3 / cardHeight);
+                    }else{
+                        jDelta = (int) Math.ceil(1f * delta * cardsGap2to3 / cardHeight);
+                        border = activeCardTop;
+                    }
                     jView.offsetTopAndBottom(getAllowedTopDelta(jView, jDelta, border));
-                    border -= step;
                 }
 
                 break;
@@ -848,9 +855,9 @@ public class CardSliderLayoutManager extends RecyclerView.LayoutManager
         } else {
             delta = dy;
         }
-
+        final int activeCardPosition = getActiveCardPosition();
         final int step = activeCardTop / TOP_CARD_COUNT;
-        final int jDelta = (int) Math.ceil(1f * delta * step / cardHeight);
+//        final int jDelta = (int) Math.ceil(1f * delta * step / cardHeight);
 //        Log.i("layoutmanager", "jDelta:" + jDelta);
         for (int i = childCount - 1; i >= 0; i--) {
             final View view = getChildAt(i);
@@ -863,6 +870,12 @@ public class CardSliderLayoutManager extends RecyclerView.LayoutManager
                 int border = activeCardTop - step;
                 for (int j = i; j >= 0; j--) {
                     final View jView = getChildAt(j);
+                    final int jDelta;
+                    if (activeCardPosition - getPosition(view) == 2) {
+                        jDelta = (int) Math.ceil(1f * delta * cardsGap1to2 / cardHeight);
+                    } else {
+                        jDelta = (int) Math.ceil(1f * delta * cardsGap2to3 / cardHeight);
+                    }
                     jView.offsetTopAndBottom(getAllowedTopDelta(jView, jDelta, border));
                     border -= step;
                 }
@@ -956,8 +969,8 @@ public class CardSliderLayoutManager extends RecyclerView.LayoutManager
         if (!state.isPreLayout()) {
             if (mScrollMode == MODE_VERTICL) {
                 fillTop(anchorPos, recycler);
-//                fillBottom(anchorPos, recycler);
-                fillBottom2(anchorPos, recycler);
+                fillBottom(anchorPos, recycler);
+//                fillBottom2(anchorPos, recycler);
             } else {
                 fillLeft(anchorPos, recycler);
                 fillRight(anchorPos, recycler);
@@ -1033,17 +1046,8 @@ public class CardSliderLayoutManager extends RecyclerView.LayoutManager
         int pos = Math.max(0, anchorPos - TOP_CARD_COUNT);//zc 避免有时候上面多一个view
 //        Log.i("Layoutmanager", "fillTop>>>anchorPos:" + anchorPos + ",pos:" + pos);
 
-        int viewTop = Math.max(-1, TOP_CARD_COUNT - (anchorPos - pos)) * layoutStep;
-//        final int layoutStep = anchorPos - pos;
+//        int viewTop = Math.max(-1, TOP_CARD_COUNT - (anchorPos - pos)) * layoutStep;
         mTopStep = layoutStep;
-//        int viewTop = 0;
-//        if (layoutStep == 2) {
-//            viewTop = (int) (activeCardTop - cardsGap1to2 - cardsGap2to3);
-//        }
-//        if (layoutStep == 1) {
-//            viewTop = (int) (activeCardTop - cardsGap1to2);
-//        }
-//        int stepNum = 0;
         while (pos < anchorPos) {
             View view = viewCache.get(pos);
             if (view != null) {
@@ -1054,23 +1058,20 @@ public class CardSliderLayoutManager extends RecyclerView.LayoutManager
                 addView(view);
                 measureChildWithMargins(view, 0, 0);
                 final int viewWidth = getDecoratedMeasuredWidth(view);
-//                layoutDecorated(view, 0, viewTop, viewWidth, viewTop + cardHeight);
-//                if (stepNum == 1) {
-//                    if (layoutStep == 2) {
-//                        viewTop = viewTop + (int) cardsGap2to3;
-//                    } else {
-//                        viewTop = viewTop + (int) cardsGap1to2;
-//                    }
-//                }
-//                if (stepNum == 2) {
-//                    viewTop = viewTop + (int) cardsGap1to2;
-//                }
-//                Log.i("Layoutmanager", "---fillTop---,viewTop:" + viewTop);
+                final int viewTop;
+                if (anchorPos - pos == 2) {
+                    viewTop = (int) (activeCardTop - cardsGap2to3 - cardsGap1to2);
+                } else if (anchorPos - pos == 1) {
+                    viewTop = (int) (activeCardTop - cardsGap2to3);
+                } else {
+                    viewTop = activeCardTop;
+                }
                 layoutDecorated(view, activeCardLeftOffset, viewTop, viewWidth + activeCardLeftOffset, viewTop + cardHeight);
+//                layoutDecorated(view, activeCardLeftOffset, viewTop, viewWidth + activeCardLeftOffset, viewTop + cardHeight);
 
             }
 
-            viewTop += layoutStep;
+//            viewTop += layoutStep;
             pos++;
         }
 
@@ -1166,10 +1167,6 @@ public class CardSliderLayoutManager extends RecyclerView.LayoutManager
                 addView(view);
                 measureChildWithMargins(view, 0, 0);
                 final int viewWidth = getDecoratedMeasuredWidth(view);
-//                layoutDecorated(view, 0, viewTop, viewWidth, viewTop + cardHeight);
-//                if (pos == anchorPos + 1) {
-//                    viewTop = (int) (viewTop + cardsGap);
-//                }
                 layoutDecorated(view, activeCardLeftOffset, viewTop, viewWidth + activeCardLeftOffset, viewTop + cardHeight);
 
             }
