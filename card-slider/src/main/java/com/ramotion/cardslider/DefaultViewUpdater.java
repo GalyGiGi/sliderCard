@@ -142,8 +142,12 @@ public class DefaultViewUpdater extends ViewUpdater {
                 scale = SCALE_CENTER - SCALE_CENTER_TO_RIGHT * ratio;
                 alpha = 1;
                 z = Z_CENTER_2;
-                float curX = transitionRight2Center * (viewLeft - transitionEnd) / transitionDistance;
-                x = -Math.min(Math.abs(transitionRight2Center), Math.abs(curX));
+                float realTranslation = transitionRight2Center * (viewLeft - transitionEnd) / transitionDistance;
+                if (Math.abs(transitionRight2Center) < Math.abs(realTranslation)) {
+                    realTranslation = transitionRight2Center;
+                }
+//                x = -Math.min(transitionRight2Center, curX);
+                x = -realTranslation;
                 Log.i("viewUpdater", "---pos:" + pos + " ,viewLeft:" + viewLeft + "--- ,x:" + x + " ,---center2right---");
             } else {
                 scale = SCALE_RIGHT;
