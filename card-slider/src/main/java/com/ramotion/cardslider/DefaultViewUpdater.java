@@ -119,6 +119,7 @@ public class DefaultViewUpdater extends ViewUpdater {
         for (int i = 0, cnt = lm.getChildCount(); i < cnt; i++) {
             final View view = lm.getChildAt(i);
             final int viewLeft = lm.getDecoratedLeft(view);
+            int pos = lm.getPosition(view);
 
             final float scale;
             final float alpha;
@@ -141,7 +142,9 @@ public class DefaultViewUpdater extends ViewUpdater {
                 scale = SCALE_CENTER - SCALE_CENTER_TO_RIGHT * ratio;
                 alpha = 1;
                 z = Z_CENTER_2;
-                x = -Math.min(transitionRight2Center, transitionRight2Center * (viewLeft - transitionEnd) / transitionDistance);
+                float curX = transitionRight2Center * (viewLeft - transitionEnd) / transitionDistance;
+                x = -Math.min(Math.abs(transitionRight2Center), Math.abs(curX));
+                Log.i("viewUpdater", "---pos:" + pos + " ,viewLeft:" + viewLeft + "--- ,x:" + x + " ,---center2right---");
             } else {
                 scale = SCALE_RIGHT;
                 alpha = 1;
@@ -172,6 +175,8 @@ public class DefaultViewUpdater extends ViewUpdater {
                 } else {
                     x = 0;
                 }
+                Log.i("viewUpdater", "---pos:" + pos + " ,viewLeft:" + viewLeft + "--- ,x:" + x + " ,---right2end---");
+
             }
 
             onUpdateViewScale(view, scale);
@@ -204,7 +209,9 @@ public class DefaultViewUpdater extends ViewUpdater {
 
     protected void onUpdateViewTransitionX(@NonNull View view, float x) {
         if (ViewCompat.getTranslationX(view) != x) {
+            Log.i("viewUpdater", "pos:" + lm.getPosition(view) + "---onUpdateViewTransitionX---viewLeft before set:" + lm.getDecoratedLeft(view) + " ,x:" + x);
             ViewCompat.setTranslationX(view, x);
+            Log.i("viewUpdater", "pos:" + lm.getPosition(view) + "---onUpdateViewTransitionX---viewLeft after set:" + lm.getDecoratedLeft(view) + " ,x:" + x);
         }
     }
 
