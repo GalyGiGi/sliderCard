@@ -660,8 +660,10 @@ public class CardSliderLayoutManager extends RecyclerView.LayoutManager
 //        final int step = activeCardTop / TOP_CARD_COUNT;
 //        final int jDelta = (int) Math.floor(1f * delta * step / cardHeight);
         View prevView = null;
-        int jDelta;
-        final int activeCardPostion = getActiveCardPosition();
+//        final int activeCardPostion = getActiveCardPosition();
+        int j = 0;
+        int jDelta = (int) Math.floor(1f * delta * cardsGap2to3 / cardWidth);
+        int jBorder = activeCardTop;
         for (int i = 0, cnt = topViews.size(); i < cnt; i++) {
 
             final View view = topViews.get(i);
@@ -670,20 +672,14 @@ public class CardSliderLayoutManager extends RecyclerView.LayoutManager
                 final int allowedDelta = getAllowedBottomDelta(view, dy, border);
                 view.offsetTopAndBottom(-allowedDelta);
             } else {
-                int border;
-                if (activeCardPostion - getPosition(view) == 2) {
-                    jDelta = (int) Math.floor(1f * delta * cardsGap1to2 / cardHeight);
-                    border = (int) (activeCardTop - cardsGap1to2 - cardsGap2to3);
-                } else if(activeCardPostion - getPosition(view) == 1){
-                    jDelta = (int) Math.floor(1f * delta * cardsGap2to3 / cardHeight);
-                    border = (int) (activeCardTop - cardsGap2to3);
-
-                }else{
-                    jDelta = (int) Math.floor(1f * delta * cardsGap2to3 / cardHeight);
-                    border = activeCardTop;
-
+                view.offsetTopAndBottom(-getAllowedBottomDelta(view, jDelta, jBorder));
+                if (j == 0) {
+                    jBorder -= cardsGap2to3;
+                    jDelta = (int) Math.floor(1f * delta *  cardsGap1to2 / cardWidth);
+                } else {
+                    jBorder -= cardsGap1to2;
                 }
-                view.offsetTopAndBottom(-getAllowedBottomDelta(view, jDelta, border));
+                j++;
             }
             prevView = view;
         }
@@ -802,10 +798,7 @@ public class CardSliderLayoutManager extends RecyclerView.LayoutManager
             delta = dy;
         }
 
-//        final int step = activeCardTop / TOP_CARD_COUNT;
-//        final int jDelta = (int) Math.ceil(1f * delta * step / cardHeight);
-//        Log.i("layoutmanager", "jDelta:" + jDelta);
-        final int activeCardPositon = getActiveCardPosition();
+
         for (int i = childCount - 1; i >= 0; i--) {
 
             final View view = getChildAt(i);
@@ -813,24 +806,15 @@ public class CardSliderLayoutManager extends RecyclerView.LayoutManager
 
             if (viewTop > activeCardTop) {
                 view.offsetTopAndBottom(getAllowedTopDelta(view, delta, activeCardTop));
-//                view.offsetTopAndBottom(getAllowedTopDelta(view, delta, (int) (activeCardTop + cardsGap)));
 
             } else {
-                int border;
-                int jDelta;
+                int border = (int) (activeCardTop - cardsGap2to3);
+                int jDelta = (int) Math.ceil(1f * delta * cardsGap2to3 / cardHeight);
                 for (int j = i; j >= 0; j--) {
                     final View jView = getChildAt(j);
-                    if (activeCardPositon - getPosition(view) == 2) {
-                        border = (int) (activeCardTop - cardsGap1to2 - cardsGap2to3);
-                        jDelta = (int) Math.ceil(1f * delta * cardsGap1to2 / cardHeight);
-                    } else if(activeCardPositon - getPosition(view) == 1){
-                        border = (int) (activeCardTop - cardsGap2to3);
-                        jDelta = (int) Math.ceil(1f * delta * cardsGap2to3 / cardHeight);
-                    }else{
-                        jDelta = (int) Math.ceil(1f * delta * cardsGap2to3 / cardHeight);
-                        border = activeCardTop;
-                    }
                     jView.offsetTopAndBottom(getAllowedTopDelta(jView, jDelta, border));
+                    border -= cardsGap1to2;
+                    jDelta = (int) Math.ceil(1f * delta * cardsGap1to2 / cardHeight);
                 }
 
                 break;
@@ -984,31 +968,6 @@ public class CardSliderLayoutManager extends RecyclerView.LayoutManager
         updateViewScale();
     }
 
-//    private void fillForVertical(int anchorPos, RecyclerView.Recycler recycler) {
-//        if (anchorPos == RecyclerView.NO_POSITION) {
-//            return;
-//        }
-//        final int layoutStep = activeCardTop / TOP_CARD_COUNT;
-//        int pos = Math.max(0, anchorPos - LEFT_CARD_COUNT - 1);
-//        int viewTop = Math.max(-1, TOP_CARD_COUNT - (anchorPos - pos)) * layoutStep;
-//        while (pos <= anchorPos) {
-//            View view = viewCache.get(pos);
-//            if (view != null) {
-//                attachView(view);
-//                viewCache.remove(pos);
-//            } else {
-//                view = recycler.getViewForPosition(pos);
-//                addView(view);
-//                measureChildWithMargins(view, 0, 0);
-//                final int viewWidth = getDecoratedMeasuredWidth(view);
-//                layoutDecorated(view, 0, viewTop, viewWidth, viewTop + cardHeight);
-//            }
-//
-//            viewTop += layoutStep;
-//            pos++;
-//        }
-//    }
-
     private void fillLeft(int anchorPos, RecyclerView.Recycler recycler) {
         if (anchorPos == RecyclerView.NO_POSITION) {
             return;
@@ -1042,11 +1001,7 @@ public class CardSliderLayoutManager extends RecyclerView.LayoutManager
             return;
         }
         final int layoutStep = activeCardTop / TOP_CARD_COUNT;
-//        int pos = Math.max(0, anchorPos - TOP_CARD_COUNT - 1);
         int pos = Math.max(0, anchorPos - TOP_CARD_COUNT);//zc 避免有时候上面多一个view
-//        Log.i("Layoutmanager", "fillTop>>>anchorPos:" + anchorPos + ",pos:" + pos);
-
-//        int viewTop = Math.max(-1, TOP_CARD_COUNT - (anchorPos - pos)) * layoutStep;
         mTopStep = layoutStep;
         while (pos < anchorPos) {
             View view = viewCache.get(pos);
@@ -1067,11 +1022,8 @@ public class CardSliderLayoutManager extends RecyclerView.LayoutManager
                     viewTop = activeCardTop;
                 }
                 layoutDecorated(view, activeCardLeftOffset, viewTop, viewWidth + activeCardLeftOffset, viewTop + cardHeight);
-//                layoutDecorated(view, activeCardLeftOffset, viewTop, viewWidth + activeCardLeftOffset, viewTop + cardHeight);
 
             }
-
-//            viewTop += layoutStep;
             pos++;
         }
 
@@ -1104,6 +1056,39 @@ public class CardSliderLayoutManager extends RecyclerView.LayoutManager
 
             viewLeft = getDecoratedRight(view);
             fillRight = viewLeft < width + cardWidth;
+            pos++;
+        }
+    }
+
+    private void fillBottom(int anchorPos, RecyclerView.Recycler recycler) {
+        Log.i("layoutManager", "---fillBottom---");
+        if (anchorPos == RecyclerView.NO_POSITION) {
+            return;
+        }
+
+        final int height = getHeight();
+        final int itemCount = getItemCount();
+
+        int pos = anchorPos;
+        int viewTop = activeCardTop;
+        boolean fillBottom = true;
+
+        while (fillBottom && pos < itemCount) {
+            View view = viewCache.get(pos);
+            if (view != null) {
+                attachView(view);
+                viewCache.remove(pos);
+            } else {
+                view = recycler.getViewForPosition(pos);
+                addView(view);
+                measureChildWithMargins(view, 0, 0);
+                final int viewWidth = getDecoratedMeasuredWidth(view);
+                layoutDecorated(view, activeCardLeftOffset, viewTop, viewWidth + activeCardLeftOffset, viewTop + cardHeight);
+
+            }
+
+            viewTop = getDecoratedBottom(view);
+            fillBottom = viewTop < height + cardHeight;
             pos++;
         }
     }
@@ -1144,38 +1129,6 @@ public class CardSliderLayoutManager extends RecyclerView.LayoutManager
         }
     }
 
-    private void fillBottom(int anchorPos, RecyclerView.Recycler recycler) {
-        Log.i("layoutManager", "---fillBottom---");
-        if (anchorPos == RecyclerView.NO_POSITION) {
-            return;
-        }
-
-        final int height = getHeight();
-        final int itemCount = getItemCount();
-
-        int pos = anchorPos;
-        int viewTop = activeCardTop;
-        boolean fillBottom = true;
-
-        while (fillBottom && pos < itemCount) {
-            View view = viewCache.get(pos);
-            if (view != null) {
-                attachView(view);
-                viewCache.remove(pos);
-            } else {
-                view = recycler.getViewForPosition(pos);
-                addView(view);
-                measureChildWithMargins(view, 0, 0);
-                final int viewWidth = getDecoratedMeasuredWidth(view);
-                layoutDecorated(view, activeCardLeftOffset, viewTop, viewWidth + activeCardLeftOffset, viewTop + cardHeight);
-
-            }
-
-            viewTop = getDecoratedBottom(view);
-            fillBottom = viewTop < height + cardHeight;
-            pos++;
-        }
-    }
 
     private void updateViewScale() {
         viewUpdater.updateView();
