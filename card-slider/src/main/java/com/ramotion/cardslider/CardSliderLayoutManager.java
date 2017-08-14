@@ -649,12 +649,16 @@ public class CardSliderLayoutManager extends RecyclerView.LayoutManager
                 topViews.add(view);
             }
         }
+        int maxDelta = 0;
         for (View view : bottomViews) {
             final int border = activeCardTop + getPosition(view) * cardHeight;
 //            final int border = (int) (activeCardTop + getPosition(view) * cardHeight + cardsGap);
 
             final int allowedDelta = getAllowedBottomDelta(view, dy, border);
             view.offsetTopAndBottom(-allowedDelta);
+            if (Math.abs(allowedDelta) > Math.abs(maxDelta)) {
+                maxDelta = Math.abs(allowedDelta);
+            }
         }
 
 //        final int step = activeCardTop / TOP_CARD_COUNT;
@@ -675,7 +679,8 @@ public class CardSliderLayoutManager extends RecyclerView.LayoutManager
                 view.offsetTopAndBottom(-getAllowedBottomDelta(view, jDelta, jBorder));
                 if (j == 0) {
                     jBorder -= cardsGap2to3;
-                    jDelta = (int) Math.floor(1f * delta *  cardsGap1to2 / cardWidth);
+//                    jDelta = (int) Math.floor(1f * delta * cardsGap1to2 / cardWidth);
+                    jDelta = (int) Math.floor(1f * delta * cardsGap1to2 / maxDelta);
                 } else {
                     jBorder -= cardsGap1to2;
                 }
@@ -798,23 +803,28 @@ public class CardSliderLayoutManager extends RecyclerView.LayoutManager
             delta = dy;
         }
 
-
+        int maxDelta = 0;//本次scroll，所有view中最大的位移的绝对值
         for (int i = childCount - 1; i >= 0; i--) {
 
             final View view = getChildAt(i);
             final int viewTop = getDecoratedTop(view);
 
             if (viewTop > activeCardTop) {
-                view.offsetTopAndBottom(getAllowedTopDelta(view, delta, activeCardTop));
-
+                int realDelta = getAllowedTopDelta(view, delta, activeCardTop);
+                view.offsetTopAndBottom(realDelta);
+                if (Math.abs(realDelta) > Math.abs(maxDelta)) {
+                    maxDelta = Math.abs(realDelta);
+                }
             } else {
                 int border = (int) (activeCardTop - cardsGap2to3);
-                int jDelta = (int) Math.ceil(1f * delta * cardsGap2to3 / cardHeight);
+//                int jDelta = (int) Math.ceil(1f * delta * cardsGap2to3 / cardHeight);
+                int jDelta = (int) Math.ceil(1f * delta * cardsGap2to3 / maxDelta);
                 for (int j = i; j >= 0; j--) {
                     final View jView = getChildAt(j);
                     jView.offsetTopAndBottom(getAllowedTopDelta(jView, jDelta, border));
                     border -= cardsGap1to2;
-                    jDelta = (int) Math.ceil(1f * delta * cardsGap1to2 / cardHeight);
+//                    jDelta = (int) Math.ceil(1f * delta * cardsGap1to2 / cardHeight);
+                    jDelta = (int) Math.ceil(1f * delta * cardsGap1to2 / maxDelta);
                 }
 
                 break;

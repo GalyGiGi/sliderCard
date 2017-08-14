@@ -125,7 +125,8 @@ public class VerticalViewUpdater extends ViewUpdater {
             if (viewTop < activeCardTop) {
                 final float ratio = (float) viewTop / activeCardTop;
                 scale = SCALE_TOP + SCALE_CENTER_TO_TOP * ratio;
-                alpha = 0.1f + ratio;
+//                alpha = 0.1f + ratio;
+                alpha = 0.1f;
                 z = Z_CENTER_1 * ratio;
                 y = 0;
             } else if (viewTop < activeCardCenter) {
