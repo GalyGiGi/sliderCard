@@ -126,7 +126,9 @@ public class VerticalCardSanpHelper extends LinearSnapHelper {
 //            int topStep = lm.getTopStep();
 
         } else {
-            out[1] = viewTop - activeCardBottom + 1;
+//            out[1] = viewTop - activeCardBottom + 1;
+            out[1] = viewTop - activeCardBottom;
+
         }
 
         if (out[1] != 0) {

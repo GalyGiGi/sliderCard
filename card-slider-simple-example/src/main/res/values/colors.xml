@@ -11,5 +11,6 @@
 
     <color name="green_dot_big">@color/blue</color>
     <color name="green_dot_small">@color/blue</color>
+    <color name="Translucent">#40000000</color>
 
 </resources>

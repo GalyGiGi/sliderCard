@@ -802,7 +802,6 @@ public class CardSliderLayoutManager extends RecyclerView.LayoutManager
             delta = dy;
         }
 
-//        int maxDelta = 0;//本次scroll，所有view中最大的位移的绝对值
         for (int i = childCount - 1; i >= 0; i--) {
 
             final View view = getChildAt(i);
@@ -811,19 +810,15 @@ public class CardSliderLayoutManager extends RecyclerView.LayoutManager
             if (viewTop > activeCardTop) {
                 int realDelta = getAllowedTopDelta(view, delta, activeCardTop);
                 view.offsetTopAndBottom(realDelta);
-//                if (Math.abs(realDelta) > Math.abs(maxDelta)) {
-//                    maxDelta = Math.abs(realDelta);
-//                }
+
             } else {
                 int border = (int) (activeCardTop - cardsGap2to3);
                 int jDelta = (int) Math.ceil(1f * delta * cardsGap2to3 / cardHeight);
-//                int jDelta = (int) Math.ceil(1f * delta * cardsGap2to3 / maxDelta);
                 for (int j = i; j >= 0; j--) {
                     final View jView = getChildAt(j);
                     jView.offsetTopAndBottom(getAllowedTopDelta(jView, jDelta, border));
                     border -= cardsGap1to2;
                     jDelta = (int) Math.ceil(1f * delta * cardsGap1to2 / cardHeight);
-//                    jDelta = (int) Math.ceil(1f * delta * cardsGap1to2 / maxDelta);
                 }
 
                 break;

@@ -27,7 +27,8 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".ChooseDeviceCardActivity"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.ActivityTranslucent">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
