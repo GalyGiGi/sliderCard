@@ -55,7 +55,6 @@ public class CardSliderLayoutManager extends RecyclerView.LayoutManager
     private int activeCardCenter;
     //    private int activeCardCenterVertical;//for vertical mode
     private float cardsGap;
-    private int mTopStep;
 
     private float cardsGap1to2;
     private float cardsGap2to3;
@@ -672,6 +671,7 @@ public class CardSliderLayoutManager extends RecyclerView.LayoutManager
 
             final View view = topViews.get(i);
             if (prevView == null || getDecoratedTop(prevView) >= activeCardBottom) {
+//            if (prevView == null || getDecoratedTop(prevView) > activeCardBottom) {
                 final int border = activeCardTop + getPosition(view) * cardHeight;
                 final int allowedDelta = getAllowedBottomDelta(view, dy, border);
                 view.offsetTopAndBottom(-allowedDelta);
@@ -935,9 +935,6 @@ public class CardSliderLayoutManager extends RecyclerView.LayoutManager
         cardsYCoords.clear();
     }
 
-    public int getTopStep() {
-        return mTopStep;
-    }
 
     private void fill(int anchorPos, RecyclerView.Recycler recycler, RecyclerView.State state) {
         viewCache.clear();
@@ -1004,9 +1001,7 @@ public class CardSliderLayoutManager extends RecyclerView.LayoutManager
         if (anchorPos == RecyclerView.NO_POSITION) {
             return;
         }
-        final int layoutStep = activeCardTop / TOP_CARD_COUNT;
         int pos = Math.max(0, anchorPos - TOP_CARD_COUNT);//zc 避免有时候上面多一个view
-        mTopStep = layoutStep;
         while (pos < anchorPos) {
             View view = viewCache.get(pos);
             if (view != null) {
@@ -1065,7 +1060,7 @@ public class CardSliderLayoutManager extends RecyclerView.LayoutManager
     }
 
     private void fillBottom(int anchorPos, RecyclerView.Recycler recycler) {
-        Log.i("layoutManager", "---fillBottom---");
+//        Log.i("layoutManager", "---fillBottom---");
         if (anchorPos == RecyclerView.NO_POSITION) {
             return;
         }

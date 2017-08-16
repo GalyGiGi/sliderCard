@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearSmoothScroller;
 import android.support.v7.widget.LinearSnapHelper;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.AccelerateInterpolator;
 
@@ -120,12 +121,14 @@ public class CardSnapHelper extends LinearSnapHelper {
                 out[0] = viewLeft - activeCardLeft;
             }
         } else {
-            out[0] = viewLeft - activeCardRight + 1;
+            out[0] = viewLeft - activeCardRight + 1;//不+1的话会反复跳动
+
         }
 
         if (out[0] != 0) {
             recyclerView.smoothScrollBy(out[0], 0, new AccelerateInterpolator());
         }
+        Log.i("CardSnapHelper", "---calculateDistanceToFinalSnap---out[0]:" + out[0]);
 
         return new int[] {0, 0};
     }

@@ -81,7 +81,7 @@ public class DefaultViewUpdater extends ViewUpdater {
 //        if (topView != null) {
 //            result = lm.getPosition(topView);
 //        }
-        Log.i("active", "getActiveCardPosition:" + result);
+//        Log.i("active", "getActiveCardPosition:" + result);
         return result;
     }
 
@@ -129,7 +129,8 @@ public class DefaultViewUpdater extends ViewUpdater {
             if (viewLeft < activeCardLeft) {
                 final float ratio = (float) viewLeft / activeCardLeft;
                 scale = SCALE_LEFT + SCALE_CENTER_TO_LEFT * ratio;
-                alpha = 0.1f + ratio;
+//                alpha = 0.1f + ratio;
+                alpha = 0.1f ;
                 z = Z_CENTER_1 * ratio;
                 x = 0;
             } else if (viewLeft < activeCardCenter) {
@@ -148,7 +149,7 @@ public class DefaultViewUpdater extends ViewUpdater {
                 }
 //                x = -Math.min(transitionRight2Center, curX);
                 x = -realTranslation;
-                Log.i("viewUpdater", "---pos:" + pos + " ,viewLeft:" + viewLeft + "--- ,x:" + x + " ,---center2right---");
+//                Log.i("viewUpdater", "---pos:" + pos + " ,viewLeft:" + viewLeft + "--- ,x:" + x + " ,---center2right---");
             } else {
                 scale = SCALE_RIGHT;
                 alpha = 1;
@@ -179,7 +180,7 @@ public class DefaultViewUpdater extends ViewUpdater {
                 } else {
                     x = 0;
                 }
-                Log.i("viewUpdater", "---pos:" + pos + " ,viewLeft:" + viewLeft + "--- ,x:" + x + " ,---right2end---");
+//                Log.i("viewUpdater", "---pos:" + pos + " ,viewLeft:" + viewLeft + "--- ,x:" + x + " ,---right2end---");
 
             }
 
@@ -213,9 +214,7 @@ public class DefaultViewUpdater extends ViewUpdater {
 
     protected void onUpdateViewTransitionX(@NonNull View view, float x) {
         if (ViewCompat.getTranslationX(view) != x) {
-            Log.i("viewUpdater", "pos:" + lm.getPosition(view) + "---onUpdateViewTransitionX---viewLeft before set:" + lm.getDecoratedLeft(view) + " ,x:" + x);
             ViewCompat.setTranslationX(view, x);
-            Log.i("viewUpdater", "pos:" + lm.getPosition(view) + "---onUpdateViewTransitionX---viewLeft after set:" + lm.getDecoratedLeft(view) + " ,x:" + x);
         }
     }
 

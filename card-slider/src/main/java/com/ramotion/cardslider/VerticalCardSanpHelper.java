@@ -17,6 +17,7 @@ import java.security.InvalidParameterException;
  */
 
 public class VerticalCardSanpHelper extends LinearSnapHelper {
+    private static final String TAG = "VerticalCardSanpHelper";
     private RecyclerView recyclerView;
 
     /**
@@ -116,21 +117,50 @@ public class VerticalCardSanpHelper extends LinearSnapHelper {
                 out[1] = -(activeCardPos - targetPos) * lm.getCardHeight();
             } else {
                 out[1] = viewTop - activeCardTop;
-//                Log.i("snapHelper", "---calculateDistanceToFinalSnap---out[1]:" + out[1]);
             }
-//            if (targetPos < activeCardPos) {
-//
-//            }
-//            final float cardGap1to2 = lm.getCardGap1to2();
-//            final float cardGap2to3 = lm.getCardGap2to3();
-//            int topStep = lm.getTopStep();
-
+            Log.i("snapHelper", "---calculateDistanceToFinalSnap条件1---out[1]:" + out[1] + " ,targetPos:" + targetPos + " ,activeCardPos:" + activeCardPos + " ,viewTop:" + viewTop + " ,activeCardTop:" + activeCardTop);
         } else {
-//            out[1] = viewTop - activeCardBottom + 1;
-            out[1] = viewTop - activeCardBottom;
+//            out[1] = viewTop - activeCardBottom + 1;//如果不加一，activeCard位置会往下移动1个像素
+            out[1] = viewTop - activeCardBottom+1;//注意这里是负数,这个数字只能保证屏幕范围内最底下的卡片滑出屏幕，还需保证它上面的卡片能滑动到activeCardTop,以及再往上的卡片对应的位置
+            //zc --------------------------------------------
+//            final int targetPos = lm.getPosition(targetView);
+//            int maxOffset = viewTop - activeCardBottom;
+//            int size = lm.getChildCount();
+//            View upperView;
+//            for (int i = 0; i < size; i++) {
+//                upperView = lm.getChildAt(i);
+//                int upperViewTop = lm.getDecoratedTop(upperView);
+//                if (upperViewTop < activeCardTop) {
+//                    int distance;
+//                    int posDistance = targetPos - lm.getPosition(upperView);
+//                    if (posDistance == 1) {//此卡片为activeCard上面的第一张，即将成为activeCard
+//                        distance = activeCardTop - upperViewTop;
+//                    } else if (posDistance == 2) {
+//                        distance = (int) (activeCardTop - lm.getCardGap2to3() - upperViewTop);
+//                        distance = (int) Math.ceil(distance * 1f * lm.getCardHeight() / lm.getCardGap2to3());
+//                    } else {
+//                        distance = (int) (activeCardTop - lm.getCardGap2to3() - (posDistance - 2) * lm.getCardGap1to2() - upperViewTop);
+//                        distance = (int) Math.ceil(distance * 1f * lm.getCardHeight() / lm.getCardGap1to2());
+//                    }
+////                    assert distance >= 0;//理论值不能为负数
+//                    if (distance < 0) {
+//                        Log.e(TAG, "calculateDistanceToFinalSnap>wrong position for :" + lm.getPosition(upperView) + " ,posDistance:" + posDistance);
+//                    }
+//                    distance = -distance;
+//                    if (Math.abs(distance) > Math.abs(maxOffset)) {
+//                        maxOffset = distance;
+//                    }
+//                }
+//            }
+//            out[1] = maxOffset;
+            //zc --------------------------------------------
+        }
+//        Log.i(TAG, "---calculateDistanceToFinalSnap---out[1]:" + out[1]);
+        Log.i(TAG, "---calculateDistanceToFinalSnap---out[1]:" + out[1] + " ,targetPos:" + lm.getPosition(targetView) + " ,activeCardPos:" + lm.getActiveCardPosition() + " ,targetViewTop:" + lm.getDecoratedTop(targetView));
+        if (out[1] > 0) {
+            Log.e(TAG, "！！！calculateDistanceToFinalSnap！！！out[1]:" + out[1] + " ,targetPos:" + lm.getPosition(targetView) + " ,activeCardPos:" + lm.getActiveCardPosition() + " ,targetViewTop:" + lm.getDecoratedTop(targetView));
 
         }
-
         if (out[1] != 0) {
             recyclerView.smoothScrollBy(0, out[1], new AccelerateInterpolator());
         }
