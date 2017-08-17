@@ -819,7 +819,8 @@ public class CardSliderLayoutManager extends RecyclerView.LayoutManager
         } else {
             delta = dy;
         }
-
+        boolean needForceReset = false;//是否强制把卡片复位
+        int activeCardIndex = -1;
         for (int i = childCount - 1; i >= 0; i--) {
 
             final View view = getChildAt(i);
@@ -828,7 +829,11 @@ public class CardSliderLayoutManager extends RecyclerView.LayoutManager
             if (viewTop > activeCardTop) {
                 int realDelta = getAllowedTopDelta(view, delta, activeCardTop);
                 view.offsetTopAndBottom(realDelta);
-
+                if (getDecoratedTop(view) == activeCardTop) {
+                    needForceReset = true;
+                    activeCardIndex = i;
+                    break;
+                }
             } else {
                 int border = (int) (activeCardTop - cardsGap2to3);
                 int jDelta = (int) Math.ceil(1f * delta * cardsGap2to3 / cardHeight);
@@ -842,7 +847,15 @@ public class CardSliderLayoutManager extends RecyclerView.LayoutManager
                 break;
             }
         }
-
+        if (needForceReset) {
+            int counter = 0;
+            for (int i = activeCardIndex - 1; i >= 0; i--) {
+                View view = getChildAt(i);
+                final int resetDelta = (int) Math.floor(activeCardTop - cardsGap2to3 - cardsGap1to2 * counter - getDecoratedTop(view));
+                view.offsetTopAndBottom(resetDelta);
+                counter++;
+            }
+        }
         return delta;
     }
 
