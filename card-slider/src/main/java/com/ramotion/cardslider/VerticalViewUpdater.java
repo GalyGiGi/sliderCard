@@ -125,14 +125,13 @@ public class VerticalViewUpdater extends ViewUpdater {
             if (viewTop < activeCardTop - lm.getCardGap2to3()) {//最顶部可能会被滑出屏幕的卡片
                 View bottomView = lm.getChildAt(i + 3);//最底部即将出屏幕的卡片
 
-                if (bottomView != null) {
+                if (bottomView != null && lm.getDecoratedTop(bottomView) <= activeCardBottom) {
                     int bottomViewTop = lm.getDecoratedTop(bottomView);
                     final float alphaRatio = (float) Math.abs(bottomViewTop - activeCardCenter) / (activeCardBottom - activeCardCenter);
-                    alpha = 0.1f * alphaRatio;
+                    alpha = 0.5f * alphaRatio;
                 } else {
-                    alpha = 0.1f;
+                    alpha = 0.5f;
                 }
-                Log.i(TAG, "upestView---alpha:" + alpha);
                 final float ratio = (float) viewTop / activeCardTop;
                 scale = SCALE_TOP + SCALE_CENTER_TO_TOP * ratio;
                 z = Z_CENTER_1 * ratio;
@@ -141,7 +140,7 @@ public class VerticalViewUpdater extends ViewUpdater {
                 final float ratio = (float) viewTop / activeCardTop;
                 scale = SCALE_TOP + SCALE_CENTER_TO_TOP * ratio;
 //                alpha = 0.1f + ratio;
-                alpha = 0.1f;
+                alpha = 0.5f;
                 z = Z_CENTER_1 * ratio;
                 y = 0;
             } else if (viewTop < activeCardCenter) {
@@ -152,18 +151,20 @@ public class VerticalViewUpdater extends ViewUpdater {
             } else if (viewTop < activeCardBottom) {
                 final float ratio = (float) (viewTop - activeCardCenter) / (activeCardBottom - activeCardCenter);
                 scale = SCALE_CENTER - SCALE_CENTER_TO_BOTTOM * ratio;
-                alpha = 0.1f;
+                float alphaRatio = 1f * (viewTop - activeCardCenter) / (activeCardBottom - activeCardCenter);
+                alpha = 1 - alphaRatio;
                 z = Z_CENTER_2;
                 float realTranslation = transitionBottom2Center * (viewTop - transitionEnd) / transitionDistance;
                 if (Math.abs(transitionBottom2Center) < Math.abs(realTranslation)) {
                     realTranslation = transitionBottom2Center;
                 }
                 y = -realTranslation;
+                Log.i(TAG, "upestView---alpha:" + alpha + " ,position:" + lm.getPosition(view) + " ,alphaRatio:" + alphaRatio);
                 //transitionDistance卡片长度，transitionEnd卡片中间点y坐标,
 //                y = -Math.min(transitionBottom2Center, transitionBottom2Center * (viewTop - transitionEnd) / transitionDistance);
             } else {
                 scale = SCALE_BOTTOM;
-                alpha = 0.1f;
+                alpha = 0.5f;
                 z = Z_RIGHT;
                 if (prevView != null) {
                     final float prevViewScale;

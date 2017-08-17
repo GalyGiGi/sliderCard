@@ -13,7 +13,8 @@
 
         <activity
             android:name="com.ramotion.cardslider.examples.simple.MainActivity"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+           >
 
             <!--<intent-filter>-->
             <!--<action android:name="android.intent.action.MAIN" />-->
@@ -30,9 +31,18 @@
             android:screenOrientation="portrait"
             android:theme="@style/Theme.ActivityTranslucent">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".TestCardAlphaAct"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.ActivityTranslucent">
+            <!--<intent-filter>-->
+                <!--<action android:name="android.intent.action.MAIN" />-->
+                <!--<category android:name="android.intent.category.LAUNCHER" />-->
+            <!--</intent-filter>-->
         </activity>
     </application>
 

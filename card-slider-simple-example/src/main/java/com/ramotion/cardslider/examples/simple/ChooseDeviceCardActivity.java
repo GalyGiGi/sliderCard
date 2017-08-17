@@ -45,6 +45,7 @@ public class ChooseDeviceCardActivity extends Activity {
                 }
             }
         });
+        recyclerView.setItemAnimator(null);
         int itemCount = sliderAdapter.getItemCount();
         if (itemCount >= 3) {
             recyclerView.scrollToPosition(2);
