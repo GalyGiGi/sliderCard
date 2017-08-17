@@ -19,7 +19,7 @@
         app:cardWidth="246dp"
         app:cardHeight="350dp"
         app:cardsGap1to2="58dp"
-        app:cardsGap2to3="58dp"
+        app:cardsGap2to3="68dp"
         app:mode="vertical"
         app:centerHorizontal="true"
         />

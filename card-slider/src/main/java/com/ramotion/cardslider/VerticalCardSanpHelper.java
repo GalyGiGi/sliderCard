@@ -156,11 +156,11 @@ public class VerticalCardSanpHelper extends LinearSnapHelper {
             //zc --------------------------------------------
         }
 //        Log.i(TAG, "---calculateDistanceToFinalSnap---out[1]:" + out[1]);
-        Log.i(TAG, "---calculateDistanceToFinalSnap---out[1]:" + out[1] + " ,targetPos:" + lm.getPosition(targetView) + " ,activeCardPos:" + lm.getActiveCardPosition() + " ,targetViewTop:" + lm.getDecoratedTop(targetView));
-        if (out[1] > 0) {
-            Log.e(TAG, "！！！calculateDistanceToFinalSnap！！！out[1]:" + out[1] + " ,targetPos:" + lm.getPosition(targetView) + " ,activeCardPos:" + lm.getActiveCardPosition() + " ,targetViewTop:" + lm.getDecoratedTop(targetView));
-
-        }
+//        Log.i(TAG, "---calculateDistanceToFinalSnap---out[1]:" + out[1] + " ,targetPos:" + lm.getPosition(targetView) + " ,activeCardPos:" + lm.getActiveCardPosition() + " ,targetViewTop:" + lm.getDecoratedTop(targetView));
+//        if (out[1] > 0) {
+//            Log.e(TAG, "！！！calculateDistanceToFinalSnap！！！out[1]:" + out[1] + " ,targetPos:" + lm.getPosition(targetView) + " ,activeCardPos:" + lm.getActiveCardPosition() + " ,targetViewTop:" + lm.getDecoratedTop(targetView));
+//
+//        }
         if (out[1] != 0) {
             recyclerView.smoothScrollBy(0, out[1], new AccelerateInterpolator());
         }

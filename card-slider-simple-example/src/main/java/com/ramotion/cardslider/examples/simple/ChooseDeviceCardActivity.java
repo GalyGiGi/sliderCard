@@ -9,6 +9,7 @@ import android.view.WindowManager;
 import com.ramotion.cardslider.CardSliderLayoutManager;
 import com.ramotion.cardslider.VerticalCardSanpHelper;
 import com.ramotion.cardslider.examples.simple.cards.MijiaCardAdapter;
+import com.ramotion.cardslider.examples.simple.cards.SliderAdapter;
 
 /**
  * Created by zengcheng on 2017/8/2.
@@ -16,10 +17,13 @@ import com.ramotion.cardslider.examples.simple.cards.MijiaCardAdapter;
 
 public class ChooseDeviceCardActivity extends Activity {
     private final static String[] DEVICES = {"米家HIFI跑鞋", "小米智能插座", "墙壁双键开关", "智米智能马桶盖", "米家小白摄像机", "飞米相机","AI音箱","小方摄像机"};
+    private final int[] pics = {R.drawable.p1, R.drawable.p2, R.drawable.p3, R.drawable.p4, R.drawable.p5};
+
     private final MijiaCardAdapter sliderAdapter = new MijiaCardAdapter(DEVICES, DEVICES.length, null);
     private CardSliderLayoutManager layoutManger;
     private RecyclerView recyclerView;
     private int currentPosition;
+//    private final SliderAdapter sliderAdapter = new SliderAdapter(pics, 20, null);
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {

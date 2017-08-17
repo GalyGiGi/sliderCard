@@ -12,6 +12,7 @@ import android.view.View;
  */
 
 public class VerticalViewUpdater extends ViewUpdater {
+    private static final String TAG = "VerticalViewUpdater";
     private static final float SCALE_TOP = 0.65f;
     private static final float SCALE_CENTER = 0.95f;
     private static final float SCALE_BOTTOM = 0.85f;
@@ -121,8 +122,22 @@ public class VerticalViewUpdater extends ViewUpdater {
             final float alpha;
             final float z;
             final float y;
+            if (viewTop < activeCardTop - lm.getCardGap2to3()) {//最顶部可能会被滑出屏幕的卡片
+                View bottomView = lm.getChildAt(i + 3);//最底部即将出屏幕的卡片
 
-            if (viewTop < activeCardTop) {
+                if (bottomView != null) {
+                    int bottomViewTop = lm.getDecoratedTop(bottomView);
+                    final float alphaRatio = (float) Math.abs(bottomViewTop - activeCardCenter) / (activeCardBottom - activeCardCenter);
+                    alpha = 0.1f * alphaRatio;
+                } else {
+                    alpha = 0.1f;
+                }
+                Log.i(TAG, "upestView---alpha:" + alpha);
+                final float ratio = (float) viewTop / activeCardTop;
+                scale = SCALE_TOP + SCALE_CENTER_TO_TOP * ratio;
+                z = Z_CENTER_1 * ratio;
+                y = 0;
+            } else if (viewTop < activeCardTop) {
                 final float ratio = (float) viewTop / activeCardTop;
                 scale = SCALE_TOP + SCALE_CENTER_TO_TOP * ratio;
 //                alpha = 0.1f + ratio;
@@ -137,7 +152,7 @@ public class VerticalViewUpdater extends ViewUpdater {
             } else if (viewTop < activeCardBottom) {
                 final float ratio = (float) (viewTop - activeCardCenter) / (activeCardBottom - activeCardCenter);
                 scale = SCALE_CENTER - SCALE_CENTER_TO_BOTTOM * ratio;
-                alpha = 1;
+                alpha = 0.1f;
                 z = Z_CENTER_2;
                 float realTranslation = transitionBottom2Center * (viewTop - transitionEnd) / transitionDistance;
                 if (Math.abs(transitionBottom2Center) < Math.abs(realTranslation)) {
@@ -148,7 +163,7 @@ public class VerticalViewUpdater extends ViewUpdater {
 //                y = -Math.min(transitionBottom2Center, transitionBottom2Center * (viewTop - transitionEnd) / transitionDistance);
             } else {
                 scale = SCALE_BOTTOM;
-                alpha = 1;
+                alpha = 0.1f;
                 z = Z_RIGHT;
                 if (prevView != null) {
                     final float prevViewScale;

@@ -58,6 +58,10 @@
 
         </RelativeLayout>
     </RelativeLayout>
-
+    <View
+        android:layout_width="@dimen/card_width"
+        android:layout_height="match_parent"
+        android:background="@android:color/white"
+        android:alpha="0"/>
 
 </android.support.v7.widget.CardView>
