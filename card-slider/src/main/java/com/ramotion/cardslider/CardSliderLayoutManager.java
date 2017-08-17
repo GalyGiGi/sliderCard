@@ -667,14 +667,19 @@ public class CardSliderLayoutManager extends RecyclerView.LayoutManager
         int j = 0;
         int jDelta = (int) Math.floor(1f * delta * cardsGap2to3 / cardHeight);
         int jBorder = activeCardTop;
+        boolean needForceReset = false;//是否强制所有卡片调整至初始状态
         for (int i = 0, cnt = topViews.size(); i < cnt; i++) {
 
             final View view = topViews.get(i);
-            if (prevView == null || getDecoratedTop(prevView) >= activeCardBottom) {
+            if (prevView == null || getDecoratedTop(prevView) > activeCardBottom) {
 //            if (prevView == null || getDecoratedTop(prevView) > activeCardBottom) {
                 final int border = activeCardTop + getPosition(view) * cardHeight;
                 final int allowedDelta = getAllowedBottomDelta(view, dy, border);
                 view.offsetTopAndBottom(-allowedDelta);
+                if (prevView == null && getDecoratedTop(view) == activeCardBottom) {
+                    needForceReset = true;
+                    break;
+                }
             } else {
                 view.offsetTopAndBottom(-getAllowedBottomDelta(view, jDelta, jBorder));
                 if (j == 0) {
@@ -687,7 +692,20 @@ public class CardSliderLayoutManager extends RecyclerView.LayoutManager
             }
             prevView = view;
         }
-
+        if (needForceReset) {
+            for (int i = 1, cnt = topViews.size(); i < cnt; i++) {
+                final View view = topViews.get(i);
+                final int resetDelta;
+                if (i == 1) {
+                    resetDelta = activeCardTop - getDecoratedTop(view);
+                } else if (i == 2) {
+                    resetDelta = (int) Math.floor((activeCardTop - cardsGap2to3) - getDecoratedTop(view));
+                } else {
+                    resetDelta = (int) Math.floor((activeCardTop - cardsGap2to3 - cardsGap1to2 * (i - 2)) - getDecoratedTop(view));
+                }
+                view.offsetTopAndBottom(resetDelta);
+            }
+        }
         return delta;
     }
 

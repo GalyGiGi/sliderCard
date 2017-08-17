@@ -121,7 +121,7 @@ public class VerticalCardSanpHelper extends LinearSnapHelper {
             Log.i("snapHelper", "---calculateDistanceToFinalSnap条件1---out[1]:" + out[1] + " ,targetPos:" + targetPos + " ,activeCardPos:" + activeCardPos + " ,viewTop:" + viewTop + " ,activeCardTop:" + activeCardTop);
         } else {
 //            out[1] = viewTop - activeCardBottom + 1;//如果不加一，activeCard位置会往下移动1个像素
-            out[1] = viewTop - activeCardBottom+1;//注意这里是负数,这个数字只能保证屏幕范围内最底下的卡片滑出屏幕，还需保证它上面的卡片能滑动到activeCardTop,以及再往上的卡片对应的位置
+            out[1] = viewTop - activeCardBottom;//注意这里是负数,这个数字只能保证屏幕范围内最底下的卡片滑出屏幕，还需保证它上面的卡片能滑动到activeCardTop,以及再往上的卡片对应的位置
             //zc --------------------------------------------
 //            final int targetPos = lm.getPosition(targetView);
 //            int maxOffset = viewTop - activeCardBottom;
