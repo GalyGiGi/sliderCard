@@ -18,7 +18,9 @@ public class VerticalViewUpdater extends ViewUpdater {
     private static final float SCALE_BOTTOM = 0.85f;
     private static final float SCALE_CENTER_TO_TOP = SCALE_CENTER - SCALE_TOP;
     private static final float SCALE_CENTER_TO_BOTTOM = SCALE_CENTER - SCALE_BOTTOM;
-
+    private static final float ALPHA_TOP = 0.5f;
+    private static final float ALPHA_ACTIVE = 1.0f;
+    private static final float ALPHA_BOTTOM = 0.0f;
     private static final int Z_CENTER_1 = 12;
     private static final int Z_CENTER_2 = 16;
     private static final int Z_RIGHT = 8;
@@ -128,9 +130,9 @@ public class VerticalViewUpdater extends ViewUpdater {
                 if (bottomView != null && lm.getDecoratedTop(bottomView) <= activeCardBottom) {
                     int bottomViewTop = lm.getDecoratedTop(bottomView);
                     final float alphaRatio = (float) Math.abs(bottomViewTop - activeCardCenter) / (activeCardBottom - activeCardCenter);
-                    alpha = 0.5f * alphaRatio;
+                    alpha = ALPHA_TOP * alphaRatio;
                 } else {
-                    alpha = 0.5f;
+                    alpha = ALPHA_TOP;
                 }
                 final float ratio = (float) viewTop / activeCardTop;
                 scale = SCALE_TOP + SCALE_CENTER_TO_TOP * ratio;
@@ -139,20 +141,20 @@ public class VerticalViewUpdater extends ViewUpdater {
             } else if (viewTop < activeCardTop) {
                 final float ratio = (float) viewTop / activeCardTop;
                 scale = SCALE_TOP + SCALE_CENTER_TO_TOP * ratio;
-//                alpha = 0.1f + ratio;
-                alpha = 0.5f;
+                final float alphaRatio = (activeCardTop - viewTop) / lm.getCardGap2to3();
+                alpha = ALPHA_ACTIVE - (ALPHA_ACTIVE - ALPHA_TOP) * alphaRatio;
                 z = Z_CENTER_1 * ratio;
                 y = 0;
             } else if (viewTop < activeCardCenter) {
                 scale = SCALE_CENTER;
-                alpha = 1;
+                alpha = ALPHA_ACTIVE;
                 z = Z_CENTER_1;
                 y = 0;
             } else if (viewTop < activeCardBottom) {
                 final float ratio = (float) (viewTop - activeCardCenter) / (activeCardBottom - activeCardCenter);
                 scale = SCALE_CENTER - SCALE_CENTER_TO_BOTTOM * ratio;
                 float alphaRatio = 1f * (viewTop - activeCardCenter) / (activeCardBottom - activeCardCenter);
-                alpha = 1 - alphaRatio;
+                alpha = ALPHA_TOP - (ALPHA_TOP - ALPHA_BOTTOM) * alphaRatio;
                 z = Z_CENTER_2;
                 float realTranslation = transitionBottom2Center * (viewTop - transitionEnd) / transitionDistance;
                 if (Math.abs(transitionBottom2Center) < Math.abs(realTranslation)) {
